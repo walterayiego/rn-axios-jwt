@@ -59,6 +59,23 @@ export default function App() {
     console.log(user);
   };
 
+  const logOut = async () => {
+    try {
+      const res = await api.delete("/logout", {
+        data: {
+          token: user.refreshToken,
+        },
+      });
+      console.log(res.data, "log out");
+      if (res.data.loggedOut == true) {
+        setUser(null);
+        setLoggedUser(null);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={getUser} style={styles.btn}>
@@ -74,11 +91,16 @@ export default function App() {
       </TouchableOpacity>
       <View className="">
         <Text> AccessToken : {user ? user.accessToken : "No user"}</Text>
+        <Text />
         <Text> RefreshToken : {user ? user.refreshToken : "No user"}</Text>
       </View>
 
       <TouchableOpacity onPress={getNewToken} style={styles.btn}>
         <Text className="bg-black">Get New Token</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={logOut} style={styles.btn}>
+        <Text className="bg-black">Log Out</Text>
       </TouchableOpacity>
 
       <StatusBar style="auto" />
