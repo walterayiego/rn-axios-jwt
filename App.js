@@ -8,7 +8,10 @@ export default function App() {
   const [loggedUser, setLoggedUser] = useState(null);
 
   const getUser = async () => {
-    if (!user?.accessToken) return;
+    if (!user?.accessToken) {
+      console.log("No user logged in");
+      return;
+    }
     try {
       const response = await serv.get("/user-logged-in", {
         headers: {
@@ -16,10 +19,11 @@ export default function App() {
           "Content-Type": "application/json",
         },
       });
-      console.log(response.data);
-      setLoggedUser(response.data.username);
+
+      setLoggedUser(response.data[0].username);
     } catch (error) {
       console.error(error);
+      setLoggedUser("No user logged in");
     }
   };
 
@@ -49,10 +53,10 @@ export default function App() {
         token: user.refreshToken,
       });
       setUser((prev) => ({ ...prev, accessToken: res.data.accessToken }));
-      console.log(res.data);
     } catch (error) {
       console.error(error);
     }
+    console.log(user);
   };
 
   return (
@@ -60,9 +64,7 @@ export default function App() {
       <TouchableOpacity onPress={getUser} style={styles.btn}>
         <Text>Get user Logged</Text>
       </TouchableOpacity>
-
-      <Text> User Logged : {loggedUser ? loggedUser : "No user"}</Text>
-
+      {loggedUser && <Text> User Logged : {loggedUser} </Text>}
       <TouchableOpacity onPress={getUsers} style={styles.btn}>
         <Text>Get Users</Text>
       </TouchableOpacity>
