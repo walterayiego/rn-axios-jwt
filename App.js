@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { api, serv } from "./api/api";
 import { useState } from "react";
-import { Dialog, IconButton, Portal, Provider, Text } from "react-native-paper";
+import { Dialog, Portal, Provider, Text } from "react-native-paper";
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -36,6 +36,10 @@ export default function App() {
       console.log("No user logged in");
       return;
     }
+    if (loggedUser) {
+      console.log("User already logged in");
+      return;
+    }
     try {
       const response = await serv.get("/user-logged-in", {
         headers: {
@@ -54,6 +58,7 @@ export default function App() {
 
   const getUsers = async () => {
     try {
+      
       const response = await api.get("/users");
       const username = response.data.map((user) => user.username);
       setAllUsers(username);
