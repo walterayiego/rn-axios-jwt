@@ -5,7 +5,7 @@ RN-Axios-jwt
 ## Description
 
 This project is a simple example of how to use Axios with JWT in React Native.
-It is the client side of the project [Node-JWT](https://github.com/walterayiego/jwt-getting-started) which is the server side.
+It is the client side of the project [Node-JWT ](https://github.com/walterayiego/jwt-getting-started) which is the server side.
 
 ## Installation
 
