@@ -7,7 +7,7 @@ import {
   View,
   Keyboard,
 } from "react-native";
-import { api, serv } from "./api/api";
+import { api, serv } from "./src/api/api.js";
 import { useState } from "react";
 import { Dialog, Portal, Provider, Text } from "react-native-paper";
 
