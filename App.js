@@ -6,10 +6,17 @@ import {
   TextInput,
   View,
   Keyboard,
+  ScrollView,
+  Dimensions,
 } from "react-native";
 import { api, serv } from "./src/api/api.js";
 import { useState } from "react";
+import axios from "axios";
 import { Dialog, Portal, Provider, Text } from "react-native-paper";
+import GlobalInstance from "./src/api/4-global-instance.jsx";
+
+axios.defaults.baseURL = 'http://192.168.8.144:4000';
+axios.defaults.headers.common['Accept'] = 'application/json';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -26,10 +33,6 @@ export default function App() {
       console.log("Error : ", error);
     }
   }, [error]);
-
-  React.useEffect(() => {
-    console.log(user, "useEffect User");
-  }, [user]);
 
   const getUser = async () => {
     if (!user?.accessToken) {
@@ -58,7 +61,6 @@ export default function App() {
 
   const getUsers = async () => {
     try {
-      
       const response = await api.get("/users");
       const username = response.data.map((user) => user.username);
       setAllUsers(username);
@@ -70,7 +72,7 @@ export default function App() {
 
   const logIn = async () => {
     try {
-      const res = await api.post("/login", {
+      const res = await axios.post("/login", {
         username: name,
       });
       setUser(res.data);
@@ -115,40 +117,46 @@ export default function App() {
 
   return (
     <Provider>
-      <View style={styles.container}>
-        <TouchableOpacity onPress={getUser} style={styles.btn}>
-          <Text style={{ color: "white" }}>Get User Logged</Text>
-        </TouchableOpacity>
-        {loggedUser && <Text>User Logged: {loggedUser}</Text>}
-        <TouchableOpacity onPress={getUsers} style={styles.btn}>
-          <Text style={{ color: "white" }}>Get Users</Text>
-        </TouchableOpacity>
-
-        <Text>{allUsers?.join(", ")}</Text>
-
-        <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="Username"
-            onChangeText={(text) => setName(text)}
-            value={name}
-            style={styles.input}
-          />
-          <TouchableOpacity onPress={logIn} style={styles.logBtn}>
-            <Text>Log In</Text>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ alignItems: "center" }}
+      >
+        <View style={styles.container}>
+          <TouchableOpacity onPress={getUser} style={styles.btn}>
+            <Text style={{ color: "white" }}>Get User Logged</Text>
           </TouchableOpacity>
+          {loggedUser && <Text>User Logged: {loggedUser}</Text>}
+          <TouchableOpacity onPress={getUsers} style={styles.btn}>
+            <Text style={{ color: "white" }}>Get Users</Text>
+          </TouchableOpacity>
+
+          <Text>{allUsers?.join(", ")}</Text>
+
+          <View style={styles.inputContainer}>
+            <TextInput
+              placeholder="Username"
+              onChangeText={(text) => setName(text)}
+              value={name}
+              style={styles.input}
+            />
+            <TouchableOpacity onPress={logIn} style={styles.logBtn}>
+              <Text>Log In</Text>
+            </TouchableOpacity>
+          </View>
+          <View>
+            <Text>AccessToken: {user ? user.accessToken : "No user"}</Text>
+            <Text>RefreshToken: {user ? user.refreshToken : "No user"}</Text>
+          </View>
+          <TouchableOpacity onPress={getNewToken} style={styles.btn}>
+            <Text style={{ color: "white" }}>Get New Token</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={logOut} style={styles.btn}>
+            <Text style={{ color: "white" }}>Log Out</Text>
+          </TouchableOpacity>
+          {/* Add your ErrorDialog component here */}
         </View>
-        <View>
-          <Text>AccessToken: {user ? user.accessToken : "No user"}</Text>
-          <Text>RefreshToken: {user ? user.refreshToken : "No user"}</Text>
-        </View>
-        <TouchableOpacity onPress={getNewToken} style={styles.btn}>
-          <Text style={{ color: "white" }}>Get New Token</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={logOut} style={styles.btn}>
-          <Text style={{ color: "white" }}>Log Out</Text>
-        </TouchableOpacity>
-        {/* Add your ErrorDialog component here */}
-      </View>
+        <GlobalInstance />
+      </ScrollView>
       <StatusBar style="auto" />
       <ErrorDialog error={error} visible={visible} setVisible={setVisible} />
     </Provider>
@@ -190,6 +198,7 @@ const ErrorDialog = ({ error, children, visible, setVisible }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    height: Dimensions.get("window").height * 0.6,
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
