@@ -72,7 +72,7 @@ export default function App() {
 
   const logIn = async () => {
     try {
-      const res = await axios.post("/login", {
+      const res = await api.post("/login", {
         username: name,
       });
       setUser(res.data);
